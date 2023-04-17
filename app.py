@@ -1,36 +1,34 @@
-import os
 import streamlit as st
 from fastai.vision.all import *
+from fastai.vision.widgets import *
 from PIL import Image
 
-# Load the trained model
+# Load the pre-trained model
 @st.cache(allow_output_mutation=True)
 def load_model():
-    model_file = "model.pkl"
-    model = load_learner(model_file)
-    return model
-
-# Predict the class of the input image
-def predict(model, img):
-    pred, idx, probs = model.predict(img)
-    return pred, probs[idx].item()
+    model_path = "model.pkl"
+    learn = load_learner(model_path)
+    return learn
 
 def main():
-    st.title("Your Image Classification App")
-    st.write("Upload an image and the model will predict its class.")
+    st.title("Cat or Dog Classifier")
+    st.write("Upload an image, and the classifier will tell you if it's a cat or a dog.")
 
-    model = load_model()
-
-    uploaded_file = st.file_uploader("Choose an image...", type=["png", "jpg", "jpeg"])
+    # Upload image
+    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
-        img = Image.open(uploaded_file)
-        st.image(img, caption="Uploaded Image", use_column_width=True)
-
-        with st.spinner("Predicting..."):
-            pred, prob = predict(model, img)
+        # Display the uploaded image
+        image = Image.open(uploaded_file)
+        st.image(image, caption="Uploaded Image", use_column_width=True)
         
-        st.success(f"Prediction: {pred}, Confidence: {prob:.2%}")
+        # Make prediction
+        with st.spinner("Predicting..."):
+            learn = load_model()
+            pred, _, _ = learn.predict(PILImage.create(uploaded_file))
+
+        # Display the result
+        st.header(f"Prediction: {pred.capitalize()}")
 
 if __name__ == "__main__":
     main()
