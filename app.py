@@ -1,6 +1,7 @@
 import streamlit as st
 from fastai.vision.all import *
 import PIL.Image
+website_url = "https://colab.research.google.com/drive/1REmEqpWZw3nTDEYCmuUNsUwMglNdbwnG"
 
 # Function to load the model
 def load_model(model_path):
@@ -17,7 +18,9 @@ def predict_image(img, model):
 def main():
     st.set_option('deprecation.showfileUploaderEncoding', False)
     st.title("Cat or Dog Classifier")
-    st.write("Upload an image, and this app will tell you if it's a cat or a dog.")
+    st.write("Upload an image, and this app will tell you if it's a cat or a dog. ")
+    st.write("To see how to train the model using fast.ai library, please go to:")
+    st.markdown(f"{website_url}")
 
     model_file = 'model.pkl'
     model = load_model(model_file)
