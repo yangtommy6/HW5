@@ -1,5 +1,4 @@
 import streamlit as st
-import torch
 from fastai.vision.all import *
 
 # Load the model
