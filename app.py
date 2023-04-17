@@ -1,36 +1,38 @@
-import os
 import streamlit as st
 from fastai.vision.all import *
-from PIL import Image
+from fastai.vision.widgets import *
+import PIL.Image
 
-# Load the trained model
-@st.cache(allow_output_mutation=True)
-def load_model():
-    model_file = "model.pkl"
-    model = load_learner(model_file)
+# Function to load the model
+def load_model(model_path):
+    model = load_learner(model_path)
     return model
 
-# Predict the class of the input image
-def predict(model, img):
-    pred, idx, probs = model.predict(img)
-    return pred, probs[idx].item()
+# Function to predict the image
+def predict_image(img, model):
+    img_fastai = PILImage.create(img)
+    pred, pred_idx, probs = model.predict(img_fastai)
+    return f'Prediction: {pred}, Probability: {probs[pred_idx]:.04f}'
 
+# Main function
 def main():
-    st.title("Your Image Classification App")
-    st.write("Upload an image and the model will predict its class.")
+    st.set_option('deprecation.showfileUploaderEncoding', False)
+    st.title("Cat or Dog Classifier")
+    st.write("Upload an image, and this app will tell you if it's a cat or a dog.")
 
-    model = load_model()
+    model_file = 'model.pkl'
+    model = load_model(model_file)
 
-    uploaded_file = st.file_uploader("Choose an image...", type=["png", "jpg", "jpeg"])
+    uploaded_file = st.file_uploader("Choose an image...", type=['png', 'jpg', 'jpeg'])
 
     if uploaded_file is not None:
-        img = Image.open(uploaded_file)
-        st.image(img, caption="Uploaded Image", use_column_width=True)
+        img = PIL.Image.open(uploaded_file)
+        st.image(img, caption='Uploaded Image', use_column_width=True)
 
-        with st.spinner("Predicting..."):
-            pred, prob = predict(model, img)
-        
-        st.success(f"Prediction: {pred}, Confidence: {prob:.2%}")
+        with st.spinner('Predicting...'):
+            prediction = predict_image(img, model)
 
-if __name__ == "__main__":
+        st.write(prediction)
+
+if __name__ == '__main__':
     main()
